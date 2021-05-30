@@ -13,8 +13,8 @@ public class Book {
 
     }
 
-    public Book(int id, String name, int price) {
-        this.id = id;
+    public Book( String name, int price) {
+
         this.name = name;
         this.price = price;
     }
@@ -31,6 +31,8 @@ public class Book {
         this.price = price;
         this.categories = categories;
     }
+
+
 
     public int getId() {
         return id;

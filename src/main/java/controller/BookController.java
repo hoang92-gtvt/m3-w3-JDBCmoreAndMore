@@ -93,7 +93,7 @@ public class BookController extends HttpServlet {
         String[] categories_str = request.getParameterValues("categories");
 
 
-        int[] categories_int = new int [categories_str.length-1];
+        int[] categories_int = new int [categories_str.length];
         List<Category> categories = new ArrayList<>();
 
 
@@ -104,9 +104,11 @@ public class BookController extends HttpServlet {
             categories.add(newCategory);
         }
 
-        Book newBook = new Book(name, price,categories );
+//        Book newBook = new Book(name, price,categories );
+        Book newBook1 = new Book(name,price);
 
-        bookService.add(newBook);
+//        bookService.add(newBook);
+        bookService.add(newBook1, categories_int);
 
         showAllBook(request,response);
 
