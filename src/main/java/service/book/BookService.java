@@ -14,11 +14,52 @@ public class BookService implements IBookService{
 
     public static final String insertBook = "insert into book (name, price) value (?,?)";
     public static final String INSERTINTORELATIVE = "insert into relative(bookID, categoryID) value(?,?)";
+    public static final String findBookByID = "select * from book where id=?";
     ICategoryService categoryService = new CategoryService();
 
 
     public static final String AllBOOK = "select * from book";
     Connection connection = ConnectionJDBC.getConnect();
+
+    @Override
+    public  Book getBookById(int id) throws SQLException {
+        Book oldBook = null;
+        PreparedStatement statement = connection.prepareStatement(findBookByID);
+        statement.setInt(1, id);
+        ResultSet result = statement.executeQuery();
+        while(result.next()){
+            String  name = result.getString("name");
+            int price = result.getInt("price");
+            oldBook = new Book (name, price);
+        }
+
+        return oldBook;
+    }
+
+    @Override
+    public void edit(int id, Book updateBook, int[] categories_int) throws SQLException {
+
+        connection.setAutoCommit(false);
+        CallableStatement statement = connection.prepareCall("call updateBook(?,?,?) ");
+        statement.setInt(1, id);
+        statement.setString(2, updateBook.getName());
+        statement.setInt(3, updateBook.getPrice());
+        statement.executeUpdate();
+
+        CallableStatement statement1 = connection.prepareCall("call deleteRelativeById(?)");
+        statement1.setInt(1, id);
+        statement1.executeUpdate();
+
+        CallableStatement statement2 = connection.prepareCall("call insertRalativeById(?,?)");
+        for (int i = 0; i < categories_int.length; i++) {
+            statement2.setInt(1, id);
+            statement2.setInt(2, categories_int[i]);
+            statement2.executeUpdate();
+        }
+        connection.commit();
+
+
+    }
 
 
     @Override
@@ -83,7 +124,10 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
+        CallableStatement statement = connection.prepareCall("call deleteBookById(?)");
+        statement.setInt(1, id);
+        statement.executeUpdate();
 
     }
 

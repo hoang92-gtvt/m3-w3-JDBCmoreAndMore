@@ -19,6 +19,8 @@
             <td>Giá Bán</td>
 
             <td>Tên loại sách</td>
+            <td>Edit</td>
+            <td>Delete</td>
         </tr>
         <c:forEach items="${bookList}" var="book">
             <tr>
@@ -29,6 +31,9 @@
                 </c:forEach>
 
                 </td>
+
+                <td><a href="/book?action=edit&id=${book.id}">edit</a></td>
+                <td><a href="/book?action=delete&id=${book.id}">delete</a></td>
 
             </tr>
 

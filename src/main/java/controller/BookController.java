@@ -33,6 +33,13 @@ public class BookController extends HttpServlet {
                 case "creat":
                     showFormCreate(request, response);
                     break;
+
+                case "edit":
+                    showFormEdit(request, response);
+                    break;
+
+                case "delete":
+                    showFormDelete(request,response);
                 default:
                     showAllBook(request, response);
                     break;
@@ -40,6 +47,24 @@ public class BookController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showFormDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/books/delete.jsp");
+        dispatcher.forward(request,response);
+
+    }
+
+    private void showFormEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        List<Category> categories = categoryService.findAll();
+        Book oldBook = bookService.getBookById(id);
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/books/edit.jsp");
+            request.setAttribute("old", oldBook);
+            request.setAttribute("categories", categories);
+        dispatcher.forward(request, response);
+
     }
 
     private void showFormCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
@@ -78,11 +103,45 @@ public class BookController extends HttpServlet {
                 case "creat":
                     Create(request, response);
                     break;
+
+                case "edit":
+                    Edit(request, response);
+                    break;
+
+                case "delete":
+                    delete(request,response);
+                default:
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        bookService.delete(id);
+        showAllBook(request, response);
+
+    }
+
+    private void Edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+//
+        int id= Integer.parseInt(request.getParameter("id") );
+        String name = request.getParameter("name");
+        int price = Integer.parseInt(request.getParameter("price"));
+        Book updateBook = new Book(name, price);
+//
+        String[] categoriesStr = request.getParameterValues("categories");
+        int[] categories_int = new int[categoriesStr.length];
+        for (int i = 0; i < categoriesStr.length; i++) {
+            categories_int[i] = Integer.parseInt(categoriesStr[i]);
+
+        }
+        bookService.edit(id, updateBook, categories_int);
+
+        showAllBook(request,response);
+
     }
 
     private void Create(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
@@ -112,9 +171,11 @@ public class BookController extends HttpServlet {
 
         showAllBook(request,response);
 
-
-
-
-
     }
+
+
+
+
+
+
 }
